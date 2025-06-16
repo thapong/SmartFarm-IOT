@@ -1,0 +1,138 @@
+{
+  "wifi": {
+    "ssid": "APHome",
+    "password": "Aompon4336"
+  
+  },
+  "mqtt": {
+    "server": "mqtt.broker.com",
+    "port": 1883,
+    "username": "",
+    "password": "",
+    "topic": "sensors/iot_node_01",
+    "client_id": "IoTNode_001",
+    "keepalive": 60,
+    "clean_session": true,
+    "qos": 0,
+    "will_retain": true,
+    "connected": false
+  
+  },
+  "sensor": {
+    "device_name": "IoT_Node_01",
+    "location": "Room A1",
+    "send_interval": 30,
+    "enable_dht22": true,
+    "enable_ds18b20": false,
+    "enable_soil_moisture": false,
+    "enable_light_sensor": false,
+    "dht22": {
+      "pin": 2,
+      "temperature_offset": 0.0,
+      "humidity_offset": 0.0,
+      "enabled": true
+    },
+    "ds18b20": {
+      "pin": 4,
+      "temperature_offset": 0.0,
+      "resolution": 12,
+      "enabled": false
+    },
+    "soil_moisture": {
+      "pin": 35,
+      "dry_value": 4095,
+      "wet_value": 1500,
+      "enabled": false
+    },
+    "light_sensor": {
+      "pin": 34,
+      "min_value": 0,
+      "max_value": 4095,
+      "enabled": false
+    },
+    "calibration": {
+      "temperature_offset": 0.0,
+      "humidity_offset": 0.0,
+      "light_multiplier": 1.0,
+      "soil_multiplier": 1.0
+    }
+  },
+  "system": {
+    "device_id": "ESP32_001",
+    "firmware_version": "1.0.0",
+    "boot_time": 0,
+    "uptime": 0,
+    "free_heap": 0,
+    "total_heap": 0,
+    "cpu_freq": 240,
+    "flash_size": 0,
+    "sketch_size": 0,
+    "free_sketch_space": 0,
+    "reset_reason": "",
+    "last_reset_time": 0
+  },
+  "settings": {
+    "timezone": "Asia/Bangkok",
+    "ntp_server": "pool.ntp.org",
+    "date_format": "DD/MM/YYYY",
+    "time_format": "HH:mm:ss",
+    "language": "th",
+    "debug_mode": false,
+    "web_server_port": 80,
+    "ap_mode": {
+      "enabled": false,
+      "ssid": "IoT_Config_AP",
+      "password": "12345678",
+      "channel": 1,
+      "hidden": false,
+      "max_connections": 4
+    },
+    "auto_update": {
+      "enabled": false,
+      "check_interval": 86400,
+      "server_url": "",
+      "current_version": "1.0.0"
+    }
+  },
+  "data_logging": {
+    "enabled": true,
+    "log_interval": 300,
+    "max_log_entries": 1000,
+    "log_to_sd": false,
+    "sd_card_pin": 5,
+    "log_format": "json",
+    "compression": false,
+    "auto_backup": false,
+    "backup_interval": 3600
+  },
+  "alerts": {
+    "enabled": false,
+    "temperature": {
+      "min": 15.0,
+      "max": 35.0,
+      "enabled": false
+    },
+    "humidity": {
+      "min": 30.0,
+      "max": 80.0,
+      "enabled": false
+    },
+    "soil_moisture": {
+      "min": 20.0,
+      "max": 80.0,
+      "enabled": false
+    },
+    "light": {
+      "min": 0,
+      "max": 1000,
+      "enabled": false
+    },
+    "notification": {
+      "email": "",
+      "webhook_url": "",
+      "enabled": false
+    }
+  },
+  "last_updated": "2025-01-01T00:00:00Z",
+  "config_version": "1.0"
+}

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Node Config</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        /* Tab Styles */
+        .tab-container {
+            margin-bottom: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 25px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 10px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .current-config {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.3);
+            font-size: 14px;
+        }
+
+        .current-config h4 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .current-config p {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .current-config .password {
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            font-size: 14px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ip-info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            font-size: 14px;
+        }
+
+        .ip-info strong {
+            color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 15px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .tab-button {
+                font-size: 12px;
+                padding: 12px 8px;
+            }
+
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>IoT Node Config</h1>
+            <p>ระบบจัดการการตั้งค่า IoT Node</p>
+        </div>
+
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab(event, 'wifi')">📶 WiFi Connection</button>
+                <button class="tab-button" onclick="switchTab(event, 'mqtt')">🌐 MQTT Server</button>
+                <button class="tab-button" onclick="switchTab(event, 'sensor')">🔧 Sensor Config</button>
+            </div>
+
+            <!-- WiFi Tab -->
+            <div id="wifi-tab" class="tab-content active">
+                <div class="current-config" id="currentWifiConfig">
+                    <h4>🌐 การเชื่อมต่อ WiFi ปัจจุบัน</h4>
+                    <p><strong>SSID:</strong> <span id="currentSSID">Loading...</span></p>
+                    <p><strong>Status:</strong> <span id="wifiStatus">Loading...</span></p>
+                </div>
+
+                <form id="wifiForm">
+                    <div class="form-group">
+                        <label for="wifi_ssid">📶 ชื่อเครือข่าย WiFi (SSID)</label>
+                        <input type="text" id="wifi_ssid" name="wifi_ssid" required placeholder="กรอกชื่อ WiFi">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wifi_password">🔐 รหัสผ่าน WiFi</label>
+                        <input type="password" id="wifi_password" name="wifi_password" required placeholder="กรอกรหัสผ่าน WiFi">
+                    </div>
+
+                    <button type="submit" class="btn">💾 บันทึกการตั้งค่า WiFi</button>
+                </form>
+            </div>
+
+            <!-- MQTT Tab -->
+            <div id="mqtt-tab" class="tab-content">
+                <div class="current-config" id="currentMqttConfig">
+                    <h4>🌐 การตั้งค่า MQTT ปัจจุบัน</h4>
+                    <p><strong>Server:</strong> <span id="currentMqttServer">Loading...</span></p>
+                    <p><strong>Port:</strong> <span id="currentMqttPort">Loading...</span></p>
+                    <p><strong>Topic:</strong> <span id="currentMqttTopic">Loading...</span></p>
+                </div>
+
+                <form id="mqttForm">
+                    <div class="form-group">
+                        <label for="mqtt_server">🌐 MQTT Server</label>
+                        <input type="text" id="mqtt_server" name="mqtt_server" required placeholder="mqtt.server.com">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mqtt_port">🔌 Port</label>
+                            <input type="number" id="mqtt_port" name="mqtt_port" value="1883" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mqtt_keepalive">⏱️ Keep Alive (s)</label>
+                            <input type="number" id="mqtt_keepalive" name="mqtt_keepalive" value="60" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mqtt_username">👤 Username (ถ้ามี)</label>
+                        <input type="text" id="mqtt_username" name="mqtt_username" placeholder="MQTT Username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mqtt_password">🔐 Password (ถ้ามี)</label>
+                        <input type="password" id="mqtt_password" name="mqtt_password" placeholder="MQTT Password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mqtt_topic">📝 Topic</label>
+                        <input type="text" id="mqtt_topic" name="mqtt_topic" required placeholder="sensors/node1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mqtt_client_id">🆔 Client ID</label>
+                        <input type="text" id="mqtt_client_id" name="mqtt_client_id" required placeholder="IoTNode_001">
+                    </div>
+
+                    <button type="submit" class="btn">💾 บันทึกการตั้งค่า MQTT</button>
+                </form>
+            </div>
+
+            <!-- Sensor Tab -->
+            <div id="sensor-tab" class="tab-content">
+                <div class="current-config" id="currentSensorConfig">
+                    <h4>🔧 การตั้งค่า Sensor ปัจจุบัน</h4>
+                    <p><strong>อัตราการส่งข้อมูล:</strong> <span id="currentSendInterval">Loading...</span> วินาที</p>
+                    <p><strong>Sensors:</strong> <span id="currentSensors">Loading...</span></p>
+                </div>
+
+                <form id="sensorForm">
+                    <div class="form-group">
+                        <label for="send_interval">⏰ อัตราการส่งข้อมูล (วินาที)</label>
+                        <input type="number" id="send_interval" name="send_interval" value="30" min="5" max="3600" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🌡️ Sensors ที่เปิดใช้งาน</label>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable_dht22" name="enable_dht22" checked>
+                            <label for="enable_dht22">DHT22 (อุณหภูมิ & ความชื้น)</label>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable_ds18b20" name="enable_ds18b20">
+                            <label for="enable_ds18b20">DS18B20 (อุณหภูมิ)</label>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable_soil_moisture" name="enable_soil_moisture">
+                            <label for="enable_soil_moisture">Soil Moisture (ความชื้นดิน)</label>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable_light_sensor" name="enable_light_sensor">
+                            <label for="enable_light_sensor">Light Sensor (แสง)</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="device_name">📱 ชื่ออุปกรณ์</label>
+                        <input type="text" id="device_name" name="device_name" required placeholder="IoT_Node_01">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">📍 ตำแหน่งที่ตั้ง</label>
+                        <input type="text" id="location" name="location" placeholder="ห้อง A1, อาคาร B">
+                    </div>
+
+                    <button type="submit" class="btn">💾 บันทึกการตั้งค่า Sensor</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 10px;">กำลังบันทึกและรีสตาร์ท...</p>
+        </div>
+
+        <div class="status" id="status"></div>
+
+        <div class="ip-info">
+            <p><strong>IP Address:</strong> <span id="ipAddress">-</span></p>
+            <p><strong>MAC Address:</strong> <span id="macAddress">-</span></p>
+            <p><strong>Uptime:</strong> <span id="uptime">-</span></p>
+        </div>
+    </div>
+
+    <script>
+        let currentConfig = {};
+
+        // สลับ Tab
+        function switchTab(event, tabName) {
+            // ซ่อน tab ทั้งหมด
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // ลบ active class จากปุ่มทั้งหมด
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // แสดง tab ที่เลือก
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // เพิ่ม active class ให้ปุ่มที่เลือก
+            event.target.classList.add('active');
+        }
+
+        // โหลดค่า config ปัจจุบัน
+        async function loadCurrentConfig() {
+            try {
+                const response = await fetch('/config');
+                currentConfig = await response.json();
+                
+                updateWifiDisplay();
+                updateMqttDisplay();
+                updateSensorDisplay();
+                fillForms();
+                
+            } catch (error) {
+                console.error('Error loading config:', error);
+                showStatus('ไม่สามารถโหลดการตั้งค่าได้', 'error');
+            }
+        }
+
+        // อัพเดทการแสดงผล WiFi
+        function updateWifiDisplay() {
+            document.getElementById('currentSSID').textContent = currentConfig.wifi?.ssid || 'ไม่ได้ตั้งค่า';
+            document.getElementById('wifiStatus').textContent = currentConfig.wifi?.connected ? 'เชื่อมต่อแล้ว' : 'ไม่ได้เชื่อมต่อ';
+        }
+
+        // อัพเดทการแสดงผล MQTT
+        function updateMqttDisplay() {
+            document.getElementById('currentMqttServer').textContent = currentConfig.mqtt?.server || 'ไม่ได้ตั้งค่า';
+            document.getElementById('currentMqttPort').textContent = currentConfig.mqtt?.port || '-';
+            document.getElementById('currentMqttTopic').textContent = currentConfig.mqtt?.topic || 'ไม่ได้ตั้งค่า';
+        }
+
+        // อัพเดทการแสดงผล Sensor
+        function updateSensorDisplay() {
+            document.getElementById('currentSendInterval').textContent = currentConfig.sensor?.send_interval || '30';
+            
+            const enabledSensors = [];
+            if (currentConfig.sensor?.enable_dht22) enabledSensors.push('DHT22');
+            if (currentConfig.sensor?.enable_ds18b20) enabledSensors.push('DS18B20');
+            if (currentConfig.sensor?.enable_soil_moisture) enabledSensors.push('Soil Moisture');
+            if (currentConfig.sensor?.enable_light_sensor) enabledSensors.push('Light Sensor');
+            
+            document.getElementById('currentSensors').textContent = enabledSensors.length > 0 ? enabledSensors.join(', ') : 'ไม่มี';
+        }
+
+        // ใส่ค่าลงในฟอร์ม
+        function fillForms() {
+            // WiFi Form
+            if (currentConfig.wifi) {
+                document.getElementById('wifi_ssid').value = currentConfig.wifi.ssid || '';
+                document.getElementById('wifi_password').value = currentConfig.wifi.password || '';
+            }
+
+            // MQTT Form
+            if (currentConfig.mqtt) {
+                document.getElementById('mqtt_server').value = currentConfig.mqtt.server || '';
+                document.getElementById('mqtt_port').value = currentConfig.mqtt.port || 1883;
+                document.getElementById('mqtt_keepalive').value = currentConfig.mqtt.keepalive || 60;
+                document.getElementById('mqtt_username').value = currentConfig.mqtt.username || '';
+                document.getElementById('mqtt_password').value = currentConfig.mqtt.password || '';
+                document.getElementById('mqtt_topic').value = currentConfig.mqtt.topic || '';
+                document.getElementById('mqtt_client_id').value = currentConfig.mqtt.client_id || '';
+            }
+
+            // Sensor Form
+            if (currentConfig.sensor) {
+                document.getElementById('send_interval').value = currentConfig.sensor.send_interval || 30;
+                document.getElementById('enable_dht22').checked = currentConfig.sensor.enable_dht22 || false;
+                document.getElementById('enable_ds18b20').checked = currentConfig.sensor.enable_ds18b20 || false;
+                document.getElementById('enable_soil_moisture').checked = currentConfig.sensor.enable_soil_moisture || false;
+                document.getElementById('enable_light_sensor').checked = currentConfig.sensor.enable_light_sensor || false;
+                document.getElementById('device_name').value = currentConfig.sensor.device_name || '';
+                document.getElementById('location').value = currentConfig.sensor.location || '';
+            }
+        }
+
+        // ส่งข้อมูลฟอร์ม
+        async function submitForm(formData, endpoint, successMessage) {
+            document.getElementById('loading').style.display = 'block';
+            document.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
+            
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.text();
+                
+                if (response.ok) {
+                    showStatus(successMessage, 'success');
+                    setTimeout(() => {
+                        loadCurrentConfig();
+                    }, 2000);
+                } else {
+                    showStatus('เกิดข้อผิดพลาด: ' + result, 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+                document.querySelectorAll('.btn').forEach(btn => btn.disabled = false);
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('wifiForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            await submitForm(formData, '/save-wifi', 'บันทึกการตั้งค่า WiFi สำเร็จ!');
+        });
+
+        document.getElementById('mqttForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            await submitForm(formData, '/save-mqtt', 'บันทึกการตั้งค่า MQTT สำเร็จ!');
+        });
+
+        document.getElementById('sensorForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            await submitForm(formData, '/save-sensor', 'บันทึกการตั้งค่า Sensor สำเร็จ!');
+        });
+
+        // แสดงสถานะ
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        }
+
+        // แสดงข้อมูลเครือข่าย
+        function displayNetworkInfo() {
+            document.getElementById('ipAddress').textContent = window.location.hostname;
+        }
+
+        // โหลดข้อมูลเมื่อหน้าเว็บโหลดเสร็จ
+        window.addEventListener('load', function() {
+            loadCurrentConfig();
+            displayNetworkInfo();
+        });
+    </script>
+</body>
+</html>
